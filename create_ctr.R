@@ -1,14 +1,13 @@
 #emily keenan
-#14/04/2023
-#building 2023-24 ctr for referendum principles model
+#21/04/2023
+#building 2023-24 ctr for 
+#this is me making changes
 
 library(tidyverse)
-
 library("readODS")
+library(janitor)
 
-cts_loc <- "Q:\\ADD Directorate\\Local Policy Analysis\\LGF\\Council Tax\\Referendum principles\\2023-24 Referendum Principles Tool\\CTR_Table_9_2023-24.ods"
-
-
+cts_loc <- "input/CTR_Table_9_2023-24 (10).ods"
 
 ## read in billing and precepting ctr data
 ctr_billing_raw <-read_ods(cts_loc, sheet = "Data_Billing", skip = 4)
@@ -18,19 +17,23 @@ ctr_precepting_raw <- read_ods(cts_loc, sheet = "Data_Precepting", skip = 5)
 ##Isolate relevant rows 
 
 
+#tidy column names 
+ctr_billing_raw <- ctr_billing_raw %>% 
+  clean_names()
+
+ctr_precepting_raw <- ctr_precepting_raw %>% 
+  clean_names()
+
 #billing authorities: rename authority, tstb and band d columns
 #used column numbers because the names are horrifying
 
 ctr_billing <- ctr_billing_raw %>%
-  rename(ecode = 'E-code',
-         onscode = 'ONS Code',
-         authority = Authority,
-         region = Region,
-         class = Class,
-         tstb2223 = 23, 
-         tstb2324 = 24,
-         avebandd_expp2223 = 27, 
-         avebandd_expp2324 = 28
+  rename(ecode = e_code,
+         onscode = ons_code,
+         tstb2223 = x7_council_tax_base_for_council_tax_setting_purposes_previous_year, 
+         tstb2324 = x7_council_tax_base_for_council_tax_setting_purposes_current_year,
+         avebandd_expp2223 = x9_average_band_d_2_adult_equivalent_council_tax_including_adult_social_care_precept_and_excluding_local_precepts_previous_year, 
+         avebandd_expp2324 = x9_average_band_d_2_adult_equivalent_council_tax_including_adult_social_care_precept_and_excluding_local_precepts_current_year
   )
 
 #isolate relevant columns
@@ -43,15 +46,12 @@ ctr_billing <- ctr_billing %>%
 #precepting authorities: rename authority, tstb and band d columns
 
 ctr_precepting <- ctr_precepting_raw %>% 
-  rename(ecode = 'E-code',
-         onscode = 'ONS Code',
-         authority = Authority,
-         region = Region,
-         class = Class, 
-         tstb2223 = 11, 
-         tstb2324 = 12,
-         avebandd_expp2223 = 13, 
-         avebandd_expp2324 = 14
+  rename(ecode = e_code,
+         onscode = ons_code,
+         tstb2223 = x2_council_tax_base_for_the_major_precepting_authoritys_area_for_precept_purposes_after_council_tax_reduction_scheme_to_1_decimal_place_previous_year, 
+         tstb2324 = x2_council_tax_base_for_the_major_precepting_authoritys_area_for_precept_purposes_after_council_tax_reduction_scheme_to_1_decimal_place_current_year,
+         avebandd_expp2223 = x3_average_band_d_2_adult_equivalent_council_tax_of_major_precepting_authority_line_1_line_2_previous_year, 
+         avebandd_expp2324 = x3_average_band_d_2_adult_equivalent_council_tax_of_major_precepting_authority_line_1_line_2_current_year
   )
 
 #isolate relevant columns
@@ -76,7 +76,7 @@ ctr <- ctr %>%
   mutate(tstb2324 = as.numeric(tstb2324)) %>% 
   mutate(avebandd_expp2223 = as.numeric(avebandd_expp2223)) %>%
   mutate(avebandd_expp2324 = as.numeric(avebandd_expp2324))
-
+#write.csv(ctr, "D:\\Users\\emily.keenan\\Documents\\council-tax\\bandd_ctr.csv")
 
 
 

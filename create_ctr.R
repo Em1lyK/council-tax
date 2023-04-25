@@ -3,21 +3,25 @@
 #building 2023-24 ctr for 
 #this is me making changes
 
+# IMPORTING LIBRARIES #
+
 library(tidyverse)
 library("readODS")
 library(janitor)
 
+# reading in relevant data sets
+
+# specific sheets: billing and precepting ctr data
 cts_loc <- "input/CTR_Table_9_2023-24 (10).ods"
 
-## read in billing and precepting ctr data
 ctr_billing_raw <-read_ods(cts_loc, sheet = "Data_Billing", skip = 4)
 
 ctr_precepting_raw <- read_ods(cts_loc, sheet = "Data_Precepting", skip = 5)
 
+
 ##Isolate relevant rows 
-
-
 #tidy column names 
+
 ctr_billing_raw <- ctr_billing_raw %>% 
   clean_names()
 
@@ -64,6 +68,7 @@ ctr <- rbind(ctr_billing, ctr_precepting)
 
 ctr <- ctr[c(1:6, 303:316, 7:302, 317:408),]
 
+# cleaning cols by replacing non numeric data points
 ctr <- ctr %>% 
   mutate(tstb2223 = ifelse(ctr$tstb2223 == "[z]", 0, tstb2223)) %>% 
   mutate(tstb2324 = ifelse(ctr$tstb2324 == "[z]", 0, tstb2324)) %>% 

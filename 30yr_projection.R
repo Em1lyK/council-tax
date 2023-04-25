@@ -3,12 +3,13 @@
 #define variables
 #band d percentage increase
 growth_rate <- 0.03
+d <- data.frame(matrix(ncol = 29, nrow = 408))
 
 multiply_repeat <- function(b, c, d) {
   i <- 1 
   while (i < 30) {
     d[,i] <<- data.frame(b*c[[i]])
-    i+1
+    i = i+1
     if (i== 30){
       break
       }
@@ -17,26 +18,33 @@ multiply_repeat <- function(b, c, d) {
 
 
 
-forecast_bandd <- current_bandd %>% mutate(with_purr = accumulate(avebandd_expp2324, ~ .x * (1 + growth_rate)))
-
-
-multiply_repeat <- function(b, c, d) {
-i <- 1
-while (i<30){
-  d <<- mutate(with_purr_i = accumulate(b, ~ .x*(1+c)))
-  i+1
-  if (i == 30){
-    break
-  }
-}
-}
-
-d <- data.frame(matrix(ncol = 40, nrow = 408))
+####inital data ####
 
 current_bandd <- ctr %>% 
   select(ecode:class, avebandd_expp2324)
 
 #forecast band d
+
+multiply_repeat(current_bandd$avebandd_expp2324, increase, forecast_bandd)
+
+
+
+test <- as.data.frame(d$X29/current_bandd$avebandd_expp2324 == 1.03^29)
+
+d <-d %>% 
+  mutate(check = X29/current_bandd$avebandd_expp2324 == 1.03^29) %>% 
+  mutate(num_check = X29/current_bandd$avebandd_expp2324 - 1.03^29) %>% 
+  add_column(current_bandd$authority)
+
+print(current_bandd[62,3])
+print(current_bandd[63,3])
+print(if())
+
+test_df <- data.frame(matrix(ncol = 29, nrow = 408, 1.03^29))
+test_df = 1.03^29
+
+check <- test_df- 
+
 
 forecast_bandd <- current_bandd %>%
   mutate(yr2425 = avebandd_expp2324*(1+percent_inc)) 

@@ -76,7 +76,7 @@ ctr <- ctr %>%
   mutate(tstb2324 = as.numeric(tstb2324)) %>% 
   mutate(avebandd_expp2223 = as.numeric(avebandd_expp2223)) %>%
   mutate(avebandd_expp2324 = as.numeric(avebandd_expp2324))
-#write.csv(ctr, "D:\\Users\\emily.keenan\\Documents\\council-tax\\bandd_ctr.csv")
+#write.csv(ctr, "D:\\Users\\emily.keenan\\Documents\\GitHub\\council-tax\\bandd_ctr.csv")
 
 
 

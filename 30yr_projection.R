@@ -1,14 +1,17 @@
-#forecast band d assuming 3% increase in each year
+#forecast band d assuming 3% increase in each year and 1% tstb increase
+#27/04/23
 
 #### define variables ####
 
-#band d percentage increase and forecast length
-growth_rate <- 0.03
+#band d and tstb percentage increase and forecast length
+levels_growth <- 0.03
+tstb_growth <- 0.01
+
 forecast_len <- 30
 
 #create multiplication coefficients of ct for the next x years
 power <- (1:forecast_len)
-increase <- as.matrix((1+growth_rate)^power)
+increase <- as.matrix((1+levels_growth)^power)
 
 #empty data frame
 d <- data.frame(matrix(ncol = 29, nrow = 408))
@@ -39,6 +42,22 @@ current_bandd <- ctr %>%
 #call forecasting function 
 multiply_repeat(current_bandd$avebandd_expp2324, increase, forecast_bandd)
 
+
+###tidy up output data frame
+
+forecast_bandd <- d
+
+#rename columns
+forecast_bandd <- forecast_bandd %>% 
+  rename_with(~ gsub("X", "year_", .x, fixed = TRUE))
+
+#add la names/references
+forecast_bandd <- cbind(forecast_bandd, current_bandd %>% 
+                          select(ecode:region))
+forecast_bandd <- forecast_bandd %>% 
+  relocate(ecode:region)
+
+
 #################################################################
 #### QA ####
 #################################################################
@@ -48,6 +67,34 @@ d <-d %>%
   mutate(check = X29/current_bandd$avebandd_expp2324 == 1.03^29) %>% 
   mutate(num_check = X29/current_bandd$avebandd_expp2324 - 1.03^29) %>% 
   add_column(current_bandd$authority)
+
+
+####################################################################
+#### 30 year taxbase projection ####
+####################################################################
+
+#### define forecast parameters ####
+tstb_growth <- 0.01
+
+
+#vector to calculate tstb every year for the length of the forecast 
+tstb_power <- (1:tstb_len)
+tstb_incr <- as.matrix((1+tstb_growth)^tstb_power)
+
+
+multiply_repeat(ctr$tstb2324, tstb_incr, forecast_tsbt)
+
+
+
+#############################################################
+####QA tstb projection ####
+#######################################################
+
+d <-d %>% 
+  mutate(check = X29/ctr$tstb2324 == 1.01^29) %>% 
+  mutate(num_check = X29/ctr$tstb2324 - 1.01^29) %>% 
+  add_column(current_bandd$authority)
+
 
 
        

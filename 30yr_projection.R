@@ -85,6 +85,20 @@ tstb_incr <- as.matrix((1+tstb_growth)^tstb_power)
 multiply_repeat(ctr$tstb2324, tstb_incr, forecast_tsbt)
 
 
+###tidy up output data frame
+
+forecast_tstb <- d
+
+#rename columns
+forecast_tstb <- forecast_tstb %>% 
+  rename_with(~ gsub("X", "year_", .x, fixed = TRUE))
+
+#add la names/references
+forecast_tstb <- cbind(forecast_tstb, current_bandd %>% 
+                          select(ecode:region))
+forecast_tstb <- forecast_tstb %>% 
+  relocate(ecode:region)
+
 
 #############################################################
 ####QA tstb projection ####
@@ -97,4 +111,24 @@ d <-d %>%
 
 
 
+###############################################
+####calculate   ctr in each forecast year ####
+############################################
+
+forecast_ctr <- forecast_bandd[c(5:33)]* forecast_tstb[c(5:33)]
+
+#add la names/references
+forecast_ctr <- cbind(forecast_ctr, current_bandd %>% 
+                         select(ecode:region))
+forecast_ctr <- forecast_ctr %>% 
+  relocate(ecode:region)
+
+#### Multiplication QA ####
+forecast_ctr$year_1 == forecast_tstb$year_1*forecast_bandd$year_1
+(ctr[1,7]*1.01^29)*(ctr[1,9]*1.03^29)== forecast_ctr[1, 33]
+
+
+
+
+       
        

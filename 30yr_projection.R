@@ -128,7 +128,7 @@ forecast_ctr$year_1 == forecast_tstb$year_1*forecast_bandd$year_1
 (ctr[1,7]*1.01^29)*(ctr[1,9]*1.03^29)== forecast_ctr[1, 33]
 
 
-
-
-       
+tb_forecast <- ctr |>
+  mutate(year_growth = tstb2324/ tstb2223-1)
+view(tb_forecast)       
        

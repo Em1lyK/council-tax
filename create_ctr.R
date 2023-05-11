@@ -1,5 +1,5 @@
 #emily keenan
-#21/04/2023
+#11/05/2023
 #building 2023-24 ctr for 
 #this is me making changes
 
@@ -10,6 +10,8 @@ library("readODS")
 library(janitor)
 
 # reading in relevant data sets
+
+setwd("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax")
 
 # specific sheets: billing and precepting ctr data
 cts_loc <- "input/CTR_Table_9_2023-24 (10).ods"

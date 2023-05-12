@@ -152,7 +152,8 @@ ctr_historic <- ctr |>
 #tidy up the datat frame
 ctr_historic <- ctr_historic |>
   select(ecode:class.x, contains("tstb")) |>
-  filter(!class.x %in% c("PCC", "MF", "CFA"))
+  filter(!class.x %in% c("PCC", "MF", "CFA", "CA", "SC", "GLA", "[z]")) |>
+  filter(!region %in% c("Eng", "[z]"))
 
 ctr_historic <- ctr_historic |>
   mutate_at(c("tstb_1516", "tstb_1617", "tstb_1718", "tstb_1819", "tstb_1920", "tstb_2021", "tstb_2122", "tstb_2223"), as.numeric)
@@ -164,11 +165,21 @@ region_historic <- ctr_historic |>
   group_by(region) |>
   summarise(across(contains("tstb"), ~ sum(.x, na.rm=TRUE)))
 
+#currently missing the GLA
+#missing historic manchester combined authority 
+#probably missing west yorkshire combined authority 
+
+view(ctr_2223)
+
 view(region_historic)
+view(ctr_1516)
 
+as.numeric(ctr_1516[ctr_1516$ecode == "Eng", "tstb_1516"]) - sum(region_historic$tstb_1516)
 
-#write_csv(ctr_historic, "output\\ctr_historic.csv")
+sum(region_historic$tstb_1516)
 
+write_csv(ctr_historic, "output\\ctr_historic.csv")
+write_csv(region_historic, "output\\reg_his_tstb.csv")
 
 view(ctr_historic)
 view(ctr)

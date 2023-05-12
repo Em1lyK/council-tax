@@ -36,8 +36,8 @@ ctr_precepting_raw <- ctr_precepting_raw %>%
 ctr_billing <- ctr_billing_raw %>%
   rename(ecode = e_code,
          onscode = ons_code,
-         tstb2223 = x7_council_tax_base_for_council_tax_setting_purposes_previous_year, 
-         tstb2324 = x7_council_tax_base_for_council_tax_setting_purposes_current_year,
+         tstb_2223 = x7_council_tax_base_for_council_tax_setting_purposes_previous_year, 
+         tstb_2324 = x7_council_tax_base_for_council_tax_setting_purposes_current_year,
          avebandd_expp2223 = x9_average_band_d_2_adult_equivalent_council_tax_including_adult_social_care_precept_and_excluding_local_precepts_previous_year, 
          avebandd_expp2324 = x9_average_band_d_2_adult_equivalent_council_tax_including_adult_social_care_precept_and_excluding_local_precepts_current_year
   )
@@ -45,7 +45,7 @@ ctr_billing <- ctr_billing_raw %>%
 #isolate relevant columns
 
 ctr_billing <- ctr_billing %>% 
-  select(ecode:class, tstb2223:tstb2324, avebandd_expp2223:avebandd_expp2324)
+  select(ecode:class, tstb_2223:tstb_2324, avebandd_expp2223:avebandd_expp2324)
 
 
 
@@ -54,8 +54,8 @@ ctr_billing <- ctr_billing %>%
 ctr_precepting <- ctr_precepting_raw %>% 
   rename(ecode = e_code,
          onscode = ons_code,
-         tstb2223 = x2_council_tax_base_for_the_major_precepting_authoritys_area_for_precept_purposes_after_council_tax_reduction_scheme_to_1_decimal_place_previous_year, 
-         tstb2324 = x2_council_tax_base_for_the_major_precepting_authoritys_area_for_precept_purposes_after_council_tax_reduction_scheme_to_1_decimal_place_current_year,
+         tstb_2223 = x2_council_tax_base_for_the_major_precepting_authoritys_area_for_precept_purposes_after_council_tax_reduction_scheme_to_1_decimal_place_previous_year, 
+         tstb_2324 = x2_council_tax_base_for_the_major_precepting_authoritys_area_for_precept_purposes_after_council_tax_reduction_scheme_to_1_decimal_place_current_year,
          avebandd_expp2223 = x3_average_band_d_2_adult_equivalent_council_tax_of_major_precepting_authority_line_1_line_2_previous_year, 
          avebandd_expp2324 = x3_average_band_d_2_adult_equivalent_council_tax_of_major_precepting_authority_line_1_line_2_current_year
   )
@@ -63,7 +63,7 @@ ctr_precepting <- ctr_precepting_raw %>%
 #isolate relevant columns
 
 ctr_precepting <- ctr_precepting %>% 
-  select(ecode:class, tstb2223:tstb2324, avebandd_expp2223:avebandd_expp2324)
+  select(ecode:class, tstb_2223:tstb_2324, avebandd_expp2223:avebandd_expp2324)
 
 ##combing the billing and precepting data 
 ctr <- rbind(ctr_billing, ctr_precepting)
@@ -72,15 +72,15 @@ ctr <- ctr[c(1:6, 303:316, 7:302, 317:408),]
 
 # cleaning cols by replacing non numeric data points
 ctr <- ctr %>% 
-  mutate(tstb2223 = ifelse(ctr$tstb2223 == "[z]", 0, tstb2223)) %>% 
-  mutate(tstb2324 = ifelse(ctr$tstb2324 == "[z]", 0, tstb2324)) %>% 
+  mutate(tstb_2223 = ifelse(ctr$tstb_2223 == "[z]", 0, tstb_2223)) %>% 
+  mutate(tstb_2324 = ifelse(ctr$tstb_2324 == "[z]", 0, tstb_2324)) %>% 
   mutate(avebandd_expp2223 = ifelse(ctr$avebandd_expp2223 == "[z]", 0, avebandd_expp2223)) %>% 
   mutate(avebandd_expp2324 = ifelse(ctr$avebandd_expp2324 == "[z]", 0, avebandd_expp2324)) %>% 
   mutate(avebandd_expp2223 = ifelse(ctr$avebandd_expp2223 == "[x]", 0, avebandd_expp2223))
 
 ctr <- ctr %>% 
-  mutate(tstb2223 = as.numeric(tstb2223)) %>% 
-  mutate(tstb2324 = as.numeric(tstb2324)) %>% 
+  mutate(tstb_2223 = as.numeric(tstb_2223)) %>% 
+  mutate(tstb_2324 = as.numeric(tstb_2324)) %>% 
   mutate(avebandd_expp2223 = as.numeric(avebandd_expp2223)) %>%
   mutate(avebandd_expp2324 = as.numeric(avebandd_expp2324))
 #write.csv(ctr, "D:\\Users\\emily.keenan\\Documents\\GitHub\\council-tax\\bandd_ctr.csv")

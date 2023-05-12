@@ -131,4 +131,44 @@ forecast_ctr$year_1 == forecast_tstb$year_1*forecast_bandd$year_1
 tb_forecast <- ctr |>
   mutate(year_growth = tstb2324/ tstb2223-1)
 view(tb_forecast)       
-       
+
+###########################################################
+####### calculate historic percetnage increase ############
+###########################################################
+
+#merge all the historic data frames together
+ctr_historic <- ctr |>
+  select(ecode:class, tstb_2324) |>
+  left_join(ctr_1516, by = "ecode")|>
+  left_join(ctr_1617, by = "ecode") |>
+  left_join(ctr_1718, by = "ecode") |>
+  left_join(ctr_1819, by = "ecode") |>
+  left_join(ctr_1920, by = "ecode") |>
+  left_join(ctr_2021, by = "ecode") |>
+  left_join(ctr_2122, by = "ecode") |>
+  left_join(ctr_2223, by = "ecode") |>
+  relocate(tstb_2324, .after = last_col())
+
+#tidy up the datat frame
+ctr_historic <- ctr_historic |>
+  select(ecode:class.x, contains("tstb")) |>
+  filter(!class.x %in% c("PCC", "MF", "CFA"))
+
+ctr_historic <- ctr_historic |>
+  mutate_at(c("tstb_1516", "tstb_1617", "tstb_1718", "tstb_1819", "tstb_1920", "tstb_2021", "tstb_2122", "tstb_2223"), as.numeric)
+
+str(ctr_historic)
+
+#group by region and sum up
+region_historic <- ctr_historic |>
+  group_by(region) |>
+  summarise(across(contains("tstb"), ~ sum(.x, na.rm=TRUE)))
+
+view(region_historic)
+
+
+#write_csv(ctr_historic, "output\\ctr_historic.csv")
+
+
+view(ctr_historic)
+view(ctr)

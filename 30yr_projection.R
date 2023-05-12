@@ -139,14 +139,14 @@ view(tb_forecast)
 #merge all the historic data frames together
 ctr_historic <- ctr |>
   select(ecode:class, tstb_2324) |>
-  left_join(ctr_1516, by = "ecode")|>
-  left_join(ctr_1617, by = "ecode") |>
-  left_join(ctr_1718, by = "ecode") |>
-  left_join(ctr_1819, by = "ecode") |>
-  left_join(ctr_1920, by = "ecode") |>
-  left_join(ctr_2021, by = "ecode") |>
-  left_join(ctr_2122, by = "ecode") |>
-  left_join(ctr_2223, by = "ecode") |>
+  inner_join(ctr_1516, by = "ecode")|>
+  inner_join(ctr_1617, by = "ecode") |>
+  inner_join(ctr_1718, by = "ecode") |>
+  inner_join(ctr_1819, by = "ecode") |>
+  inner_join(ctr_1920, by = "ecode") |>
+  inner_join(ctr_2021, by = "ecode") |>
+  inner_join(ctr_2122, by = "ecode") |>
+  inner_join(ctr_2223, by = "ecode") |>
   relocate(tstb_2324, .after = last_col())
 
 #tidy up the datat frame
@@ -165,21 +165,27 @@ region_historic <- ctr_historic |>
   group_by(region) |>
   summarise(across(contains("tstb"), ~ sum(.x, na.rm=TRUE)))
 
-#currently missing the GLA
-#missing historic manchester combined authority 
-#probably missing west yorkshire combined authority 
+#create a tstb total datat frame
+total_tstb <- numcolwise(sum)(region_historic)
 
+# pivot longer so I cal graph it
+total_tstb <- pivot_longer(total_tstb, (c("tstb_1516", "tstb_1617", "tstb_1718", "tstb_1819", "tstb_1920", "tstb_2021", "tstb_2122", "tstb_2223", "tstb_2324")))
+
+#trying to rename columns but currently UNSUCCESSFUL ###########################
+total_tstb <- total_tstb |>
+  rename(TSTB = value, Year = name)
+
+#plot of total tstb but only using consistent local authorities  
+ggplot(total_tstb, aes(x=name , y=value)) + geom_point(size = 5, shape =15) +
+  theme(axis.text=element_text(size=17), axis.title=element_text(size=17,face="bold"))
+
+view(total_tstb)
 view(ctr_2223)
-
 view(region_historic)
-view(ctr_1516)
+view(ctr_1516
 
-as.numeric(ctr_1516[ctr_1516$ecode == "Eng", "tstb_1516"]) - sum(region_historic$tstb_1516)
-
-sum(region_historic$tstb_1516)
-
-write_csv(ctr_historic, "output\\ctr_historic.csv")
-write_csv(region_historic, "output\\reg_his_tstb.csv")
+#write_csv(ctr_historic, "output\\ctr_historic.csv")
+#write_csv(region_historic, "output\\reg_his_tstb.csv")
 
 view(ctr_historic)
 view(ctr)

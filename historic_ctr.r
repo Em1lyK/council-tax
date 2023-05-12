@@ -58,12 +58,16 @@ clean_ctr_3 <- function(output, raw_input, tstb_pv, tstb_cy) {
     clean_names()
 
     output <<- output |>
-    rename(tstb_pv =  x8_council_tax_base_for_council_tax_setting_purposes_line_4_x_line_6_line_7, tstb_cy = x22)|>
+    rename(paste0("tstb_", tstb_pv) =  x8_council_tax_base_for_council_tax_setting_purposes_line_4_x_line_6_line_7, tstb_cy = x22)|>
     select(ecode:class, tstb_pv:tstb_cy) |>
     filter(ecode != "NA")
     return(output)
 
 }
+
+
+
+
 
 #call function 
 clean_ctr(ctr_2223, ctr_2223_raw, tstb_2122, tstb_2223)

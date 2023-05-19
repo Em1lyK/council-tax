@@ -31,7 +31,7 @@ clean_ctr <- function(output, raw_input, tstb_cy) {
     clean_names()
 
     a <- a |>
-    rename(!! paste0("tstb_", tstb_cy) := x22) |>
+    dplyr::rename(!! paste0("tstb_", tstb_cy) := x22) |>
     select(ecode:class, paste0("tstb_", tstb_cy), ons_code) |>
     relocate(ons_code) |>
     filter(ecode != "NA")
@@ -45,7 +45,7 @@ clean_ctr_2 <- function(output, raw_input, tstb_cy) {
     clean_names()
 
     a <- a |>
-    rename( !! paste0("tstb_", tstb_cy) := x20) |>
+    dplyr::rename( !! paste0("tstb_", tstb_cy) := x20) |>
     select(ecode:class, paste0("tstb_", tstb_cy)) |>
     filter(ecode != "NA")
     return(assign(output, a, envir = parent.frame()))
@@ -58,7 +58,7 @@ clean_ctr_3 <- function(output, raw_input, tstb_cy) {
         clean_names()
 
     a <- a |>
-    rename(!! paste0("tstb_", tstb_cy) := x22) |>
+    dplyr::rename(!! paste0("tstb_", tstb_cy) := x22) |>
     select(ecode:class, paste0("tstb_", tstb_cy)) |>
     filter(ecode != "NA")
     return(assign(output, a, envir = parent.frame()))

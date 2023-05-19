@@ -1,6 +1,13 @@
 #forecast band d assuming 3% increase in each year and 1% tstb increase
 #27/04/23
 
+#graphing package 
+install.packages('forecast', dependencies = TRUE)
+
+library(ggplot2) 
+library(forecast) 
+theme_set(theme_classic())
+
 #### define variables ####
 
 #band d and tstb percentage increase and forecast length
@@ -163,7 +170,7 @@ str(ctr_historic)
 #group by region and sum up
 region_historic <- ctr_historic |>
   group_by(region) |>
-  summarise(across(contains("tstb"), ~ sum(.x, na.rm=TRUE)))
+  dplyr::summarise(dplyr::across(dplyr::contains("tstb"), ~ sum(.x, na.rm=TRUE)))
 
 #create a tstb total datat frame
 total_tstb <- numcolwise(sum)(region_historic)
@@ -173,11 +180,21 @@ total_tstb <- pivot_longer(total_tstb, (c("tstb_1516", "tstb_1617", "tstb_1718",
 
 #trying to rename columns but currently UNSUCCESSFUL ###########################
 total_tstb <- total_tstb |>
-  rename(TSTB = value, Year = name)
+  dplyr::rename(TSTB = value, Year = name)
 
 #plot of total tstb but only using consistent local authorities  
-ggplot(total_tstb, aes(x=name , y=value)) + geom_point(size = 5, shape =15) +
+ggplot(total_tstb, aes(x=Year , y=TSTB)) + geom_point(size = 5, shape =15) +
   theme(axis.text=element_text(size=17), axis.title=element_text(size=17,face="bold"))
+
+
+#plot of regional tstb 
+ggplot(region_historic, aes(, y=))
+
+region_historic
+
+region_historic <- ts(region_historic, 2015, 2023, 1)
+is.ts(region_historic)
+
 
 view(total_tstb)
 view(ctr_2223)

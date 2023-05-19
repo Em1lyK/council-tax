@@ -1,9 +1,11 @@
 #forecast band d assuming 3% increase in each year and 1% tstb increase
 #27/04/23
 
-#graphing package 
+#graphing package and stats package (zoo)
 install.packages('forecast', dependencies = TRUE)
+install.packages("zoo")
 
+library(zoo)
 library(ggplot2) 
 library(forecast) 
 theme_set(theme_classic())
@@ -22,6 +24,7 @@ increase <- as.matrix((1+levels_growth)^power)
 
 #empty data frame
 d <- data.frame(matrix(ncol = 29, nrow = 408))
+e <- data.frame(matrix(ncol = 9, nrow = 9))
 
 
 
@@ -37,6 +40,21 @@ multiply_repeat <- function(b, c, d) {
   }
 }
 
+
+#### function to calculate tstb percentage increases 
+precentage_inc <- function(a) {
+  i <- 3 
+  j <- 1
+  while (i < 11) {
+    e[,j] <<- data.frame((a[,i]- a[,i-1])/a[,i-1])
+    i = i+1
+    j = j+1
+    if (i== 11){
+      break
+      }
+  }
+  return(e)
+}
 
 
 ####initial data ####
@@ -186,14 +204,97 @@ total_tstb <- total_tstb |>
 ggplot(total_tstb, aes(x=Year , y=TSTB)) + geom_point(size = 5, shape =15) +
   theme(axis.text=element_text(size=17), axis.title=element_text(size=17,face="bold"))
 
+region_historic_long <- pivot_longer(region_historic, !region)
 
-#plot of regional tstb 
-ggplot(region_historic, aes(, y=))
+tstb_region_plot <- ggplot(region_historic_long, aes(name, value, group = region, color = region)) + geom_line(size=1.2)
+tstb_region_plot
 
-region_historic
+#call function to calculate the percentage increase in tstb by region
+precentage_inc(region_historic)
+regtstb_inc <- e
+
+regtstb_inc <- regtstb_inc |>
+  select(!X9)
+  
+regtstb_inc <- cbind(regtstb_inc, region_historic$region)
+
+regtstb_inc <- regtstb_inc |>
+  dplyr::rename(region ="region_historic$region") |>
+  relocate(region)
+
+#check
+(region_historic[,10]- region_historic[,9])/region_historic[,9] == e[,8]
+
+view(region_historic)
+view(regtstb_inc)
+
+regtstb_inc_long <- pivot_longer(regtstb_inc, !region) 
+
+view(regtstb_inc_long)
+
+e_tstb_his <- regtstb_inc_long |>
+  filter(region == "E")
+em_tstb_his <- regtstb_inc_long |>
+  filter(region == "EM")
+l_tstb_his <- regtstb_inc_long |>
+  filter(region == "L")
+en_tstb_his <- regtstb_inc_long |>
+  filter(region == "EN")
+nw_tstb_his <- regtstb_inc_long |>
+  filter(region == "NW")
+se_tstb_his <- regtstb_inc_long |>
+  filter(region == "SE")
+sw_tstb_his <- regtstb_inc_long |>
+  filter(region == "SW")
+wm_tstb_his <- regtstb_inc_long |>
+  filter(region == "WM")
+yh_tstb_his <- regtstb_inc_long |>
+  filter(region == "YH")
+
+
+e_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+em_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+l_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+en_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+nw_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+se_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+sw_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+wm_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+yh_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
+
+moving_average <- function(x) {
+  i <- 1
+  while(i<30){
+    f[,i] <<- data.frame()
+  }
+
+}
+
+#### function to calculate tstb percentage increases 
+precentage_inc <- function(a) {
+  i <- 3 
+  j <- 1
+  while (i < 11) {
+    e[,j] <<- data.frame((a[,i]- a[,i-1])/a[,i-1])
+    i = i+1
+    j = j+1
+    if (i== 11){
+      break
+      }
+  }
+  return(e)
+}
+
+
+
+view(moving_ave)
+view(region_historic_long)
+view(e_tstb_his)
+
 
 region_historic <- ts(region_historic, 2015, 2023, 1)
 is.ts(region_historic)
+str(region_historic)
 
 
 view(total_tstb)
@@ -206,3 +307,14 @@ view(ctr_1516
 
 view(ctr_historic)
 view(ctr)
+
+
+
+set.seed(1)
+
+x.Date <- as.Date(paste(2004, rep(1:4, 4:1), sample(1:28, 10), sep = "-"))
+view(x.Date)
+x <- zoo(rnorm(12), x.Date)
+view(x)
+## rolling operations for univariate series
+rollmean(x, 3)

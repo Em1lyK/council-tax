@@ -25,7 +25,7 @@ increase <- as.matrix((1+levels_growth)^power)
 #empty data frame
 d <- data.frame(matrix(ncol = 29, nrow = 408))
 e <- data.frame(matrix(ncol = 9, nrow = 9))
-
+f <- data.frame(matrix(ncol = 29, nrow = 408))
 
 
 #### function to multiply a column by a list of numbers and output many columns ####
@@ -232,6 +232,7 @@ regtstb_inc_long <- pivot_longer(regtstb_inc, !region)
 
 view(regtstb_inc_long)
 
+#isolating reagional taxbases 
 e_tstb_his <- regtstb_inc_long |>
   filter(region == "E")
 em_tstb_his <- regtstb_inc_long |>
@@ -251,7 +252,17 @@ wm_tstb_his <- regtstb_inc_long |>
 yh_tstb_his <- regtstb_inc_long |>
   filter(region == "YH")
 
+#checking the code in the while loop works properly
+#e_tstb_his <- rbind(e_tstb_his, c("E", "X9", as.numeric(0.0122)))
+#e_tstb_his$value <- as.numeric(e_tstb_his$value)
+i =1
+c<-8
+mean(e_tstb_his$value[i:c])
+#mean(e_tstb_his[i:c, 3])
+#mean(e_tstb_his[2:7, 3])
+#e_tstb_his$value <- as.numeric(e_tstb_his$value)
 
+#calculating the mean for the first 8 years 
 e_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 em_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 l_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
@@ -262,13 +273,45 @@ sw_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 wm_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 yh_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 
-moving_average <- function(x) {
-  i <- 1
-  while(i<30){
-    f[,i] <<- data.frame()
-  }
+#ALMOST CORRECT FUNCTION to calculate the rolling mean and forecast the tax base 
+moving_average <- function(reg, roll_one) {
+  a <- ctr |>
+    dplyr::select(ecode:class,tstb_2324) |>
+    dplyr::filter(region == paste0(reg))
 
+  i <- 1
+  f[,i] <<- data.frame(a$tstb_2324*(1 + roll_one))
+  e_tstb_his <- rbind(e_tstb_his, c("E", paste0("X", i), roll_one))
+
+  while(i<30){
+    i = i+1
+    c <-i+7
+    b <- mean(e_tstb_his$value[i:c])
+    f[,i] <<- data.frame(f[,i-1]*(1 + b)) 
+    e_tstb_his <- rbind(e_tstb_his, c("E", paste0("X", i), b))
+  }
+  if(i==30){
+    break
+  }
+  #return(f)
+  return(e_tstb_his)
 }
+
+#calling forecasting function 
+moving_average('E', e_tstb_mave)
+view(e_tstb_his)
+
+rm(e_tstb_his)
+f[,1]
+view(f)
+
+
+f <- data.frame(matrix(ncol = 29, nrow = 45))
+
+ctr$tstb_2324*(1+e_tstb_mave)
+view(e_tstb_his)
+view(region_historic)
+view(regtstb_inc)
 
 #### function to calculate tstb percentage increases 
 precentage_inc <- function(a) {
@@ -310,11 +353,29 @@ view(ctr)
 
 
 
-set.seed(1)
+set.seed(98234) # Creating example series
+my_series <- 1:100 + rnorm(100, 0, 10) 
+my_series # Printing series 
+view(my_series)
+moving_average <- function(x, n = 5) { # Create user-defined function 
+  stats::filter(x, rep(1 / n, n), sides = 2) 
+} 
+  
+my_moving_average_1 <- moving_average(my_series) # Apply user-defined function
+my_moving_average_1                               # Printing moving average 
 
-x.Date <- as.Date(paste(2004, rep(1:4, 4:1), sample(1:28, 10), sep = "-"))
-view(x.Date)
-x <- zoo(rnorm(12), x.Date)
-view(x)
-## rolling operations for univariate series
-rollmean(x, 3)
+my_moving_average_2 <- rollmean(my_series, k = 5) # Apply rollmean function
+my_moving_average_2 # Printing moving average
+my_moving_max <- rollmax(my_series, k = 5) # Apply rollmax function
+
+plot(1:length(my_series), my_series, type = "l", # Plotting series & moving metrics 
+  ylim = c(min(my_series), max(my_moving_sum)), 
+  xlab = "Time Series", ylab = "Values") 
+lines(1:length(my_series), c(NA, NA, my_moving_average_2, NA, NA), type = "l", col = 2) 
+lines(1:length(my_series), c(NA, NA, my_moving_max, NA, NA), type = "l", col = 3) 
+lines(1:length(my_series), c(NA, NA, my_moving_median, NA, NA), type = "l", col = 4) 
+lines(1:length(my_series), c(NA, NA, my_moving_sum, NA, NA), type = "l", col = 5) 
+legend("topleft", 
+      c("Time Series", "Moving Average", "Moving Maximum", "Moving Median", "Moving Sum"), lty = 1, col = 1:5)
+
+

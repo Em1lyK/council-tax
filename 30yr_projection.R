@@ -1,5 +1,5 @@
 #forecast band d assuming 3% increase in each year and 1% tstb increase
-#27/04/23
+#02/06/23
 
 #graphing package and stats package (zoo)
 install.packages('forecast', dependencies = TRUE)
@@ -72,7 +72,7 @@ reg_inc_repeat <- function(g, inital_inc, inc_df) {
 }
 
 #### function to multiply a column by a list of numbers and output many columns ####
-multiply_repeat <- function(starting_val, increase_df, output) {
+tstb_multiply_repeat <- function(starting_val, increase_df, output) {
   i <- 1 
   while (i < 30) {
     output[,i] <<- data.frame(starting_val*increase_df[[i]])
@@ -329,31 +329,31 @@ yh_forecast <- forecast_tstbinc |>
   pivot_longer(!region)
 
 #### Call the function to apply the forecasted increase to each of the regions, store the data frame and join the region column back on 
-multiply_repeat(ctr$tstb_2324, east_forecast$value, forecast_e_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, east_forecast$value, forecast_e_tstb)
 forecast_e_tstb <- d
 forecast_e_tstb <- cbind(forecast_e_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, em_forecast$value, forecast_em_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, em_forecast$value, forecast_em_tstb)
 forecast_em_tstb <- d
 forecast_em_tstb <- cbind(forecast_em_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, l_forecast$value, forecast_l_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, l_forecast$value, forecast_l_tstb)
 forecast_l_tstb <- d
 forecast_l_tstb <- cbind(forecast_l_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, ne_forecast$value, forecast_ne_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, ne_forecast$value, forecast_ne_tstb)
 forecast_ne_tstb <- d
 forecast_ne_tstb <- cbind(forecast_ne_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, nw_forecast$value, forecast_nw_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, nw_forecast$value, forecast_nw_tstb)
 forecast_nw_tstb <- d
 forecast_nw_tstb <- cbind(forecast_nw_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, se_forecast$value, forecast_se_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, se_forecast$value, forecast_se_tstb)
 forecast_se_tstb <- d
 forecast_se_tstb <- cbind(forecast_se_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, sw_forecast$value, forecast_sw_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, sw_forecast$value, forecast_sw_tstb)
 forecast_sw_tstb <- d
 forecast_sw_tstb <- cbind(forecast_sw_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, wm_forecast$value, forecast_wm_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, wm_forecast$value, forecast_wm_tstb)
 forecast_wm_tstb <- d
 forecast_wm_tstb <- cbind(forecast_wm_tstb, ctr$region)
-multiply_repeat(ctr$tstb_2324, yh_forecast$value, forecast_yh_tstb)
+tstb_multiply_repeat(ctr$tstb_2324, yh_forecast$value, forecast_yh_tstb)
 forecast_yh_tstb <- d
 forecast_yh_tstb <- cbind(forecast_yh_tstb, ctr$region)
 

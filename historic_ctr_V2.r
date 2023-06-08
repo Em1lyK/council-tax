@@ -85,6 +85,33 @@ clean_ctr_2("ctr_1617", ctr_1617_raw, "1617")
 #call third function due to changes in column names and number of columns
 clean_ctr_3("ctr_1516", ctr_1516_raw, "1516")
 
+#merge all the historic data frames together
+ctr_historic <- ctr |>
+  select(ecode:class, tstb_2324) |>
+  inner_join(ctr_1516, by = "ecode")|>
+  inner_join(ctr_1617, by = "ecode") |>
+  inner_join(ctr_1718, by = "ecode") |>
+  inner_join(ctr_1819, by = "ecode") |>
+  inner_join(ctr_1920, by = "ecode") |>
+  inner_join(ctr_2021, by = "ecode") |>
+  inner_join(ctr_2122, by = "ecode") |>
+  inner_join(ctr_2223, by = "ecode") |>
+  relocate(tstb_2324, .after = last_col())
+
+  
+#tidy up the datat frame
+ctr_historic <- ctr_historic |>
+  select(ecode:class.x, contains("tstb")) |>
+  filter(!class.x %in% c("PCC", "MF", "CFA", "CA", "SC", "GLA", "[z]")) |>
+  filter(!region %in% c("Eng", "[z]"))
+
+ctr_historic <- ctr_historic |>
+  mutate_at(c("tstb_1516", "tstb_1617", "tstb_1718", "tstb_1819", "tstb_1920", "tstb_2021", "tstb_2122", "tstb_2223"), 
+            as.numeric) 
+write.csv(ctr_historic, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_historic.csv")
+
+
+
 view(ctr_2223)
 view(ctr_2122)
 view (ctr_2021)

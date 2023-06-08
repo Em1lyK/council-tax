@@ -22,6 +22,12 @@ forecast_len <- 30
 power <- (1:forecast_len)
 increase <- as.matrix((1+levels_growth)^power)
 
+#read in ctr from github 
+ctr_loc_2324 <-  'https://raw.githubusercontent.com/Em1lyK/council-tax/main/output/bandd_ctr.csv' 
+ctr <- read_csv(url(ctr_loc_2324))
+historic_ctr_loc <- 'https://raw.githubusercontent.com/Em1lyK/council-tax/main/output/ctr_historic.csv'
+ctr_historic <- read_csv(url(historic_ctr_loc))
+
 #empty data frame
 d <- data.frame(matrix(ncol = 29, nrow = 408))
 e <- data.frame(matrix(ncol = 9, nrow = 9))
@@ -186,19 +192,6 @@ view(tb_forecast)
 ###########################################################
 ####### calculate historic percetnage increase ############
 ###########################################################
-
-#merge all the historic data frames together
-ctr_historic <- ctr |>
-  select(ecode:class, tstb_2324) |>
-  inner_join(ctr_1516, by = "ecode")|>
-  inner_join(ctr_1617, by = "ecode") |>
-  inner_join(ctr_1718, by = "ecode") |>
-  inner_join(ctr_1819, by = "ecode") |>
-  inner_join(ctr_1920, by = "ecode") |>
-  inner_join(ctr_2021, by = "ecode") |>
-  inner_join(ctr_2122, by = "ecode") |>
-  inner_join(ctr_2223, by = "ecode") |>
-  relocate(tstb_2324, .after = last_col())
 
 #tidy up the datat frame
 ctr_historic <- ctr_historic |>
@@ -514,109 +507,5 @@ sw_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 wm_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 yh_tstb_mave <- zoo::rollmean(e_tstb_his$value, 8)
 
-#ALMOST CORRECT FUNCTION to calculate the rolling mean and forecast the tax base 
-moving_average <- function(reg, roll_one) {
-  a <- ctr |>
-    dplyr::select(ecode:class,tstb_2324) |>
-    dplyr::filter(region == paste0(reg))
-
-  i <- 1
-  f[,i] <<- data.frame(a$tstb_2324*(1 + roll_one))
-  e_tstb_his <- rbind(e_tstb_his, c("E", paste0("X", i), roll_one))
-
-  while(i<30){
-    i = i+1
-    c <-i+7
-    b <- mean(e_tstb_his$value[i:c])
-    f[,i] <<- data.frame(f[,i-1]*(1 + b)) 
-    e_tstb_his <- rbind(e_tstb_his, c("E", paste0("X", i), b))
-  }
-  if(i==30){
-    break
-  }
-  #return(f)
-  return(e_tstb_his)
-}
-
-#calling forecasting function 
-moving_average('E', e_tstb_mave)
-view(e_tstb_his)
-
-rm(e_tstb_his)
-f[,1]
-view(f)
-
-
-f <- data.frame(matrix(ncol = 29, nrow = 45))
-
-ctr$tstb_2324*(1+e_tstb_mave)
-view(e_tstb_his)
-view(region_historic)
-view(regtstb_inc)
-
-#### function to calculate tstb percentage increases 
-precentage_inc <- function(a) {
-  i <- 3 
-  j <- 1
-  while (i < 11) {
-    e[,j] <<- data.frame((a[,i]- a[,i-1])/a[,i-1])
-    i = i+1
-    j = j+1
-    if (i== 11){
-      break
-      }
-  }
-  return(e)
-}
-
-
-
-view(moving_ave)
-view(region_historic_long)
-view(e_tstb_his)
-
-
-region_historic <- ts(region_historic, 2015, 2023, 1)
-is.ts(region_historic)
-str(region_historic)
-
-
-view(total_tstb)
-view(ctr_2223)
-view(region_historic)
-view(ctr_1516
-
-#write_csv(ctr_historic, "output\\ctr_historic.csv")
-#write_csv(region_historic, "output\\reg_his_tstb.csv")
-
-view(ctr_historic)
-view(ctr)
-
-
-
-set.seed(98234) # Creating example series
-my_series <- 1:100 + rnorm(100, 0, 10) 
-my_series # Printing series 
-view(my_series)
-moving_average <- function(x, n = 5) { # Create user-defined function 
-  stats::filter(x, rep(1 / n, n), sides = 2) 
-} 
-  
-my_moving_average_1 <- moving_average(my_series) # Apply user-defined function
-my_moving_average_1                               # Printing moving average 
-
-my_moving_average_2 <- rollmean(my_series, k = 5) # Apply rollmean function
-my_moving_average_2 # Printing moving average
-my_moving_max <- rollmax(my_series, k = 5) # Apply rollmax function
-
-plot(1:length(my_series), my_series, type = "l", # Plotting series & moving metrics 
-  ylim = c(min(my_series), max(my_moving_sum)), 
-  xlab = "Time Series", ylab = "Values") 
-lines(1:length(my_series), c(NA, NA, my_moving_average_2, NA, NA), type = "l", col = 2) 
-lines(1:length(my_series), c(NA, NA, my_moving_max, NA, NA), type = "l", col = 3) 
-lines(1:length(my_series), c(NA, NA, my_moving_median, NA, NA), type = "l", col = 4) 
-lines(1:length(my_series), c(NA, NA, my_moving_sum, NA, NA), type = "l", col = 5) 
-legend("topleft", 
-      c("Time Series", "Moving Average", "Moving Maximum", "Moving Median", "Moving Sum"), lty = 1, col = 1:5)
 
 

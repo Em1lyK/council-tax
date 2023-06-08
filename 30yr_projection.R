@@ -126,69 +126,6 @@ d <-d %>%
   add_column(current_bandd$authority)
 
 
-####################################################################
-#### 30 year taxbase projection ####
-####################################################################
-
-#### define forecast parameters ####
-tstb_growth <- 0.01
-tstb_len <- 30
-
-#vector to calculate tstb every year for the length of the forecast 
-tstb_power <- (1:tstb_len)
-tstb_incr <- as.matrix((1+tstb_growth)^tstb_power)
-
-
-multiply_repeat(ctr$tstb2324, tstb_incr, forecast_tsbt)
-
-
-###tidy up output data frame
-
-forecast_tstb <- d
-
-#rename columns
-forecast_tstb <- forecast_tstb %>% 
-  rename_with(~ gsub("X", "year_", .x, fixed = TRUE))
-
-#add la names/references
-forecast_tstb <- cbind(forecast_tstb, current_bandd %>% 
-                          select(ecode:region))
-forecast_tstb <- forecast_tstb %>% 
-  relocate(ecode:region)
-
-
-#############################################################
-####QA tstb projection ####
-#######################################################
-
-d <-d %>% 
-  mutate(check = X29/ctr$tstb2324 == 1.01^29) %>% 
-  mutate(num_check = X29/ctr$tstb2324 - 1.01^29) %>% 
-  add_column(current_bandd$authority)
-
-
-
-###############################################
-####calculate   ctr in each forecast year ####
-############################################
-
-forecast_ctr <- forecast_bandd[c(5:33)]* forecast_tstb[c(5:33)]
-
-#add la names/references
-forecast_ctr <- cbind(forecast_ctr, current_bandd %>% 
-                         select(ecode:region))
-forecast_ctr <- forecast_ctr %>% 
-  relocate(ecode:region)
-
-#### Multiplication QA ####
-forecast_ctr$year_1 == forecast_tstb$year_1*forecast_bandd$year_1
-(ctr[1,7]*1.01^29)*(ctr[1,9]*1.03^29)== forecast_ctr[1, 33]
-
-
-tb_forecast <- ctr |>
-  mutate(year_growth = tstb2324/ tstb2223-1)
-view(tb_forecast)       
-
 ###########################################################
 ####### calculate historic percetnage increase ############
 ###########################################################
@@ -222,7 +159,7 @@ total_tstb <- numcolwise(sum)(region_historic)
 # pivot longer so I cal graph it
 total_tstb <- pivot_longer(total_tstb, (c("tstb_1516", "tstb_1617", "tstb_1718", "tstb_1819", "tstb_1920", "tstb_2021", "tstb_2122", "tstb_2223", "tstb_2324")))
 
-#trying to rename columns but currently UNSUCCESSFUL ###########################
+#rename columns 
 total_tstb <- total_tstb |>
   dplyr::rename(TSTB = value, Year = name)
 
@@ -235,7 +172,10 @@ region_historic_long <- pivot_longer(region_historic, !region)
 tstb_region_plot <- ggplot(region_historic_long, aes(name, value, group = region, color = region)) + geom_line(size=1.2)
 tstb_region_plot
 
-#call function to calculate the percentage increase in tstb by region
+####################################################################################################################
+################call function to calculate the percentage increase in tstb by region###############################
+####################################################################################################################
+
 precentage_inc(region_historic)
 regtstb_inc <- e                                                    #data frame frame of percentage increases in each year and region
 
@@ -251,6 +191,8 @@ regtstb_inc_long <- pivot_longer(regtstb_inc, !region)              #restructure
 mean_tstb_inc <- regtstb_inc_long |>                                #calculate the mean tstb increase 
   group_by(region) |>
   dplyr::summarise(mean = mean(value))
+
+################################ trial different averages ################################################
 
 ### calculate mean without Covid year (20/21 to 21/22) ###
 mean_noc <- regtstb_inc_long |>
@@ -279,9 +221,9 @@ ave_tstb_inc <- left_join(mean_tstb_inc,mean_noc, by = 'region')
 ave_tstb_inc <- left_join(ave_tstb_inc, median_tstb_inc, by = 'region')
 ave_tstb_inc <- left_join(ave_tstb_inc, median_noc, by = 'region')
 
-####################################################################
+######################################################################################################################
 #### 30 year taxbase projection with regional discrimination ####
-####################################################################
+####################################################################################################################
 
 #### define forecast parameters ####
 median_tstb_inc$median <- median_tstb_inc$median + 1                #add one to the growth 
@@ -385,6 +327,7 @@ tstb_forecast_reg <- rbind(forecast_e_tstb, forecast_em_tstb, forecast_l_tstb, f
 #rename the authority column
 tstb_forecast_reg <- tstb_forecast_reg |>
   dplyr::rename(authority = 'current_bandd$authority')
+
 #Select the LA identifying columns from the ctr  
 name_code <- ctr |>
   select(ecode:authority)
@@ -422,31 +365,6 @@ plot_birmingham <- ggplot(birmingham, aes(x = year, y = value, group = 1)) + geo
 
 write_csv(birmingham, 'output\\birmingham.csv')
 
-view(ctr_forecast)
-view(birmingham)
-length(tstb_forecast_reg) == length(ordered_bandd_forecast)
-str(tstb_forecast_reg)
-str(ordered_bandd_forecast)
-view(tstb_forecast_reg)
-view(ordered_bandd_forecast)
-view(name_code)
-multiply_repeat(ctr$tstb2324, tstb_incr, forecast_tsbt)
-
-view(forecast_bandd)
-
-###tidy up output data frame
-
-forecast_tstb <- d
-
-#rename columns
-forecast_tstb <- forecast_tstb %>% 
-  rename_with(~ gsub("X", "year_", .x, fixed = TRUE))
-
-#add la names/references
-forecast_tstb <- cbind(forecast_tstb, current_bandd %>% 
-                          select(ecode:region))
-forecast_tstb <- forecast_tstb %>% 
-  relocate(ecode:region)
 
 
 

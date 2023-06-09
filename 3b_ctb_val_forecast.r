@@ -3,32 +3,12 @@
 #read in the ctb and forecast 
 
 #location of ctb file
-ctb_input <- c('input\\Council_Taxbase_local_authority_level_data_2022 (4).ods')
-#read in ctb
-ctb_raw <- read_ods(ctb_input, sheet = "Council_Taxbase_Data", range = "A6:N316")
-
-ctb_val <- ctb_raw %>%
-  clean_names()%>%
-  select(!notes)
-
-ctb_val <- ctb_val |>
-    select(!contains('band'))
-
-view(ctb_val)
+ctb_loc <- 'https://raw.githubusercontent.com/Em1lyK/council-tax/main/output/ctb_val.csv'
+ctb_val <- readr::read_csv(url(ctb_loc))
 
 ####################################################################
 #### 30 year taxbase projection with regional discrimination ####
 ####################################################################
-
-#### define forecast parameters ####
-median_tstb_inc$median <- median_tstb_inc$median + 1                #add one to the growth 
-g <- cbind(g, median_tstb_inc$region)                               #add region colum  to empty df
-g <- g |>                                                           #tidy up region column
-  dplyr::rename(region = 'median_tstb_inc$region') |>
-  relocate(region)
-view(east_forecast)
-reg_inc_repeat(g, median_tstb_inc$median, 'forecast_tstbinc')      #call function to calculate the taxbase growth for the next 30yr in reference to yr 1
-
 
 
 ###START AGAIN HERE###

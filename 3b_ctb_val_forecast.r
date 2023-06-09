@@ -6,6 +6,15 @@
 ctb_loc <- 'https://raw.githubusercontent.com/Em1lyK/council-tax/main/output/ctb_val.csv'
 ctb_val <- readr::read_csv(url(ctb_loc))
 
+#define empty data frame
+output <- data.frame(matrix(ncol = 29, nrow = 310))
+
+
+### unify column names 
+ctb_val <- ctb_val |>
+  select(-...1) |>
+  dplyr::rename(ecode = e_code, onscode = ons_code, authority = local_authority)
+
 ####################################################################
 #### 30 year taxbase projection with regional discrimination ####
 ####################################################################
@@ -14,76 +23,84 @@ ctb_val <- readr::read_csv(url(ctb_loc))
 ###START AGAIN HERE###
 #### Call the function to apply the forecasted increase to each of the regions, store the data frame and join the region column back on 
 tstb_multiply_repeat(ctb_val$total, east_forecast$value, dwel_forecast_e)
-dwel_forecast_e <- d
-forecast_e_tstb <- cbind(forecast_e_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, em_forecast$value, dwel_forecast_em)
-forecast_em_tstb <- d
-forecast_em_tstb <- cbind(forecast_em_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, l_forecast$value, forecast_l_tstb)
-forecast_l_tstb <- d
-forecast_l_tstb <- cbind(forecast_l_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, ne_forecast$value, forecast_ne_tstb)
-forecast_ne_tstb <- d
-forecast_ne_tstb <- cbind(forecast_ne_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, nw_forecast$value, forecast_nw_tstb)
-forecast_nw_tstb <- d
-forecast_nw_tstb <- cbind(forecast_nw_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, se_forecast$value, forecast_se_tstb)
-forecast_se_tstb <- d
-forecast_se_tstb <- cbind(forecast_se_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, sw_forecast$value, forecast_sw_tstb)
-forecast_sw_tstb <- d
-forecast_sw_tstb <- cbind(forecast_sw_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, wm_forecast$value, forecast_wm_tstb)
-forecast_wm_tstb <- d
-forecast_wm_tstb <- cbind(forecast_wm_tstb, ctr$region)
-tstb_multiply_repeat(ctr$tstb_2324, yh_forecast$value, forecast_yh_tstb)
-forecast_yh_tstb <- d
-forecast_yh_tstb <- cbind(forecast_yh_tstb, ctr$region)
+forecast_e_val <- output
+forecast_e_val <- cbind(forecast_e_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, em_forecast$value, dwel_forecast_em)
+forecast_em_val <- output
+forecast_em_val <- cbind(forecast_em_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, l_forecast$value, dwel_forecast_l)
+forecast_l_val <- output
+forecast_l_val <- cbind(forecast_l_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, ne_forecast$value, dwel_forecast_ne)
+forecast_ne_val <- output
+forecast_ne_val <- cbind(forecast_ne_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, nw_forecast$value, dwel_forecast_nw)
+forecast_nw_val <- output
+forecast_nw_val <- cbind(forecast_nw_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, se_forecast$value, dwel_forecast_se)
+forecast_se_val <- output
+forecast_se_val <- cbind(forecast_se_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, sw_forecast$value, dwel_forecast_sw)
+forecast_sw_val <- output
+forecast_sw_val <- cbind(forecast_sw_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, wm_forecast$value, dwel_forecast_wm)
+forecast_wm_val <- output
+forecast_wm_val <- cbind(forecast_wm_val, ctb_val$region, ctb_val$ecode)
+tstb_multiply_repeat(ctb_val$total, yh_forecast$value, dwel_forecast_yh)
+forecast_yh_val <- output
+forecast_yh_val <- cbind(forecast_yh_val, ctb_val$region, ctb_val$ecode)
 
 #filter out the correct region from each of the forecasted region data frames 
-forecast_e_tstb <- forecast_e_tstb |>
-   dplyr::rename(region = 'ctr$region') |>
+forecast_e_val <- forecast_e_val |>
+   dplyr::rename(region = 'ctb_val$region') |>
+   dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'E')
-forecast_em_tstb <- forecast_em_tstb |>
-   dplyr::rename(region = 'ctr$region') |>
+forecast_em_val <- forecast_em_val |>
+   dplyr::rename(region = 'ctb_val$region') |>
+   dplyr::rename(ecode = 'ctb_val$ecode') |>
    dplyr::filter(region == 'EM')
-forecast_l_tstb <- forecast_l_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_l_val <- forecast_l_val |>
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'L')
-forecast_ne_tstb <- forecast_ne_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_ne_val <- forecast_ne_val |> 
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'NE')
-forecast_nw_tstb <- forecast_nw_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_nw_val <- forecast_nw_val |>
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'NW')
-forecast_se_tstb <- forecast_se_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_se_val <- forecast_se_val |>
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'SE')
-forecast_sw_tstb <- forecast_sw_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_sw_val <- forecast_sw_val |>
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'SW')
-forecast_wm_tstb <- forecast_wm_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_wm_val <- forecast_wm_val |>
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'WM')
-forecast_yh_tstb <- forecast_yh_tstb |>
-  dplyr::rename(region = 'ctr$region') |>
+forecast_yh_val <- forecast_yh_val |>
+  dplyr::rename(region = 'ctb_val$region') |>
+  dplyr::rename(ecode = 'ctb_val$ecode') |>
   dplyr::filter(region == 'YH')
 
-#bind the forecasted tstb back together 
-tstb_forecast_reg <- rbind(forecast_e_tstb, forecast_em_tstb, forecast_l_tstb, forecast_ne_tstb, 
-                            forecast_nw_tstb, forecast_se_tstb, forecast_sw_tstb, forecast_wm_tstb, forecast_yh_tstb)
-#rename the authority column
-tstb_forecast_reg <- tstb_forecast_reg |>
-  dplyr::rename(authority = 'current_bandd$authority')
+#bind the forecasted valuation hh back together 
+val_forecast_reg <- rbind(forecast_e_val, forecast_em_val, forecast_l_val, forecast_ne_val, 
+                            forecast_nw_val, forecast_se_val, forecast_sw_val, forecast_wm_val, forecast_yh_val)
+                            
 #Select the LA identifying columns from the ctr  
 name_code <- ctr |>
   select(ecode:authority)
-tstb_forecast_reg <- left_join(tstb_forecast_reg, name_code, by = 'authority')                    #join the identifying column back into the forecasted data frame
-tstb_forecast_reg <- tstb_forecast_reg |>                                                         #reorganise the identifying columns 
-  relocate(authority:onscode)
+val_forecast_reg <- left_join(val_forecast_reg, name_code, by = 'ecode')                    #join the identifying column back into the forecasted data frame
+val_forecast_reg <- val_forecast_reg |>                                                         #reorganise the identifying columns 
+  relocate(region:authority)
 
 #rename columns
-tstb_forecast_reg <- tstb_forecast_reg %>% 
-  rename_with(~ gsub("X", "year_", .x, fixed = TRUE)) |>
-  dplyr::select(-check, -num_check)
+val_forecast_reg <- val_forecast_reg %>% 
+  rename_with(~ gsub("X", "year_", .x, fixed = TRUE))
+
+

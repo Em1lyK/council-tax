@@ -103,4 +103,3 @@ val_forecast_reg <- val_forecast_reg |>                                         
 val_forecast_reg <- val_forecast_reg %>% 
   rename_with(~ gsub("X", "year_", .x, fixed = TRUE))
 
-

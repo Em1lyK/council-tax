@@ -100,7 +100,7 @@ ctb_val <- ctb_raw %>%
 ctb_val <- ctb_val |>
     select(!contains('band'))
 
-write.csv(ctr, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctb_val.csv")
+write.csv(ctb_val, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctb_val.csv")
 
 
 

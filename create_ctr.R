@@ -10,13 +10,13 @@ library("readODS")
 library(janitor)
 library(plyr)
 
-
 # reading in relevant data sets
-
 setwd("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax")
 
 # specific sheets: billing and precepting ctr data
 cts_loc <- "input/CTR_Table_9_2023-24 (10).ods"
+#location of ctb file
+ctb_input <- c('input\\Council_Taxbase_local_authority_level_data_2022 (4).ods')
 
 ctr_billing_raw <-read_ods(cts_loc, sheet = "Data_Billing", skip = 4)
 
@@ -88,6 +88,19 @@ ctr <- ctr %>%
   mutate(avebandd_expp2324 = as.numeric(avebandd_expp2324))
 write.csv(ctr, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\bandd_ctr.csv")
 
+################################################################################
+######################read in ctb######################
+#################################################################################
+ctb_raw <- read_ods(ctb_input, sheet = "Council_Taxbase_Data", range = "A6:N316")
+
+ctb_val <- ctb_raw %>%
+  clean_names()%>%
+  select(!notes)
+
+ctb_val <- ctb_val |>
+    select(!contains('band'))
+
+write.csv(ctr, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctb_val.csv")
 
 
 

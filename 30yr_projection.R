@@ -5,10 +5,18 @@
 install.packages('forecast', dependencies = TRUE)
 install.packages("zoo")
 
+library(tidyverse)
+library("readODS")
+library(janitor)
+library(plyr)
 library(zoo)
 library(ggplot2) 
 library(forecast) 
 theme_set(theme_classic())
+
+#### set working directory ####
+#setwd("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax")
+
 
 #### define variables ####
 

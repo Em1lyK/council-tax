@@ -9,9 +9,48 @@ library(tidyverse)
 library("readODS")
 library(janitor)
 library(plyr)
+library(readxl)
 
 # reading in relevant data sets
 setwd("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax")
+
+restructure_2324 <- function(df, summarise_numerics = TRUE) {
+
+  # Ref data required by function. Should prob lump this outside {}
+
+  terminated_orgs <-
+  read_excel("input/restructuring 2013 to 2023.xlsx",
+  sheet = "ONS code lookup 2013 to 2023") %>% 
+  clean_names() %>%
+  select(status, contains("ons_code_")) %>%
+  filter(status == "terminated")
+
+  geogs_2023 <- terminated_orgs %>%
+  pivot_longer(-c(ons_code_2023, status), values_to = "old_geog") %>%
+  select(-name, -status) %>%
+  unique() # Gardening 
+
+  # The function will output the rebased and collapsed 2324 LAs
+
+  if (summarise_numerics == TRUE) {
+  output <- df %>%
+  left_join(geogs_2023, by = c("ons_code" = "old_geog")) %>%
+  mutate(ons_code = ifelse(!is.na(ons_code_2023), ons_code_2023, ons_code)) %>%
+  select(-ons_code_2023) %>%
+  group_by(ons_code) %>%
+  dplyr::summarise(across(where(is.numeric), sum)) %>%
+  ungroup()  
+  } else { # If you do not want to summarise across numerics (e.g. not wanting to add up new vars)
+  output <<- df %>%
+  left_join(geogs_2023, by = c("ons_code" = "old_geog")) %>%
+  mutate(ons_code = ifelse(!is.na(ons_code_2023), ons_code_2023, ons_code)) %>%
+  select(-ons_code_2023) %>%
+  ungroup() 
+  }
+
+  return(output)
+}
+
 
 # specific sheets: billing and precepting ctr data
 cts_loc <- "input/CTR_Table_9_2023-24 (10).ods"
@@ -100,7 +139,17 @@ ctb_val <- ctb_raw %>%
 ctb_val <- ctb_val |>
     select(!contains('band'))
 
-write.csv(ctb_val, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctb_val.csv")
+ctb_val_2324 <- restructure_2324(ctb_val)
+ctb_val_2324 <- ctb_val_2324 |>
+    dplyr::rename(onscode = ons_code)
+
+ctb_val_2324 <- left_join(ctb_val_2324, select(ctr, ecode:class), by = 'onscode')
+ctb_val_2324 <- ctb_val_2324 |>
+  relocate(ecode:class)
+#view(ctr)
+#view(ctb_val_2324)
+
+write.csv(ctb_val_2324, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctb_val.csv")
 
 
 

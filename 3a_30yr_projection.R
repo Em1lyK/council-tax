@@ -361,9 +361,9 @@ ordered_bandd_forecast <- tstb_forecast_reg |>
 ordered_bandd_forecast <- left_join(ordered_bandd_forecast, forecast_bandd, by = c('authority', 'region', 'ecode', 'onscode'))
 
 ctr_forecast <- select(tstb_forecast_reg, contains('year')) * select(ordered_bandd_forecast, contains('year'))                #multiply the tstb forecast by the band d  forecast
-ctr_forecast <- cbind(ctr_forecast, select(tstb_forecast_reg, authority:onscode))                                             #add the la id columns back in 
+ctr_forecast <- cbind(ctr_forecast, select(tstb_forecast_reg, region:authority))                                             #add the la id columns back in 
 ctr_forecast <- ctr_forecast |>                                                                                               #reorganise the id columns
-  relocate(authority:onscode)
+  relocate(region:authority)
 
 birmingham <- ctr_forecast |>
   dplyr::filter(onscode == 'E08000025') |>

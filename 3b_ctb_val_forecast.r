@@ -7,13 +7,12 @@ ctb_loc <- 'https://raw.githubusercontent.com/Em1lyK/council-tax/main/output/ctb
 ctb_val <- readr::read_csv(url(ctb_loc))
 
 #define empty data frame
-output <- data.frame(matrix(ncol = 29, nrow = 310))
+output <- data.frame(matrix(ncol = 29, nrow = 297))
 
 
 ### unify column names 
 ctb_val <- ctb_val |>
-  select(-...1) |>
-  dplyr::rename(ecode = e_code, onscode = ons_code, authority = local_authority)
+  select(-...1)
 
 ####################################################################
 #### 30 year taxbase projection with regional discrimination ####

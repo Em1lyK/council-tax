@@ -145,7 +145,8 @@ ctb_val_2324 <- ctb_val_2324 |>
 
 ctb_val_2324 <- left_join(ctb_val_2324, select(ctr, ecode:class), by = 'onscode')
 ctb_val_2324 <- ctb_val_2324 |>
-  relocate(ecode:class)
+  relocate(ecode:class) |>
+  arrange(authority)
 #view(ctr)
 #view(ctb_val_2324)
 

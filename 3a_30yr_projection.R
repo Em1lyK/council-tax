@@ -14,6 +14,7 @@ library(ggplot2)
 library(forecast) 
 theme_set(theme_classic())
 
+
 #### set working directory ####
 #setwd("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax")
 
@@ -367,7 +368,7 @@ ctr_forecast <- ctr_forecast |>                                                 
 
 birmingham <- ctr_forecast |>
   dplyr::filter(onscode == 'E08000025') |>
-  pivot_longer(!authority:onscode) |>
+  pivot_longer(!region:authority) |>
   select(name:value)
 
 birmingham <- cbind(birmingham, c(1:29))

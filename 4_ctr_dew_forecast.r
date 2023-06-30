@@ -1,6 +1,7 @@
 #09/06/23
 #Emily Keenan 
 #code to calculate the ctr forecast per dwelling 
+library(plotly)
 
 #### order the ctr forecast in the order of the dwellings forecast ####
 ordered_ctr_forecast <- val_forecast_reg |>
@@ -19,40 +20,19 @@ ctr_per_dwel <- cbind(ctb_val |>
 year1_check <- select(ordered_ctr_forecast, year_1)/select(val_forecast_reg, year_1)                        #double check the above lines does what I think it does
 year1_check == select(ctr_per_dwel, year_1)                                                                 #compare results
 
-view(ctr_per_dwel)
 
 #### isolate year 1 and year 30 ####
-ctr_per_dwel
+view(ctr_per_dwel)
+input_ct_dew <- ctr_per_dwel %>% ungroup() %>% mutate(across(contains("year"), ~. - year_1)  )
+# alternative to above
+input_ct_dew <- ctr_per_dwel %>% ungroup()
+input_ct_dew_long <-  pivot_longer(input_ct_dew, contains("year"))  %>% mutate(name = as.numeric(str_replace(name, "year_", "")))
+view(rel_m8_innit)
+view(rel_m8_long)
 
-view(ctb_val)
-view(ctr_forecast)
-view(val_forecast_reg)
-view(tstb_forecast_reg)
-view(ordered_bandd_forecast)
-view(bandd_forecast_long)
+yr_30_plot <- ggplot(input_ct_dew_long, aes(name, value, group = ecode, color = class)) + geom_line(size=1.2) 
+ggsave(yr_30_plot, 'output\\yr_30_plot.png')
 
-ctr_perdwel_long <- pivot_longer(ctr_per_dwel, !ecode:class)
-ctr_forecast_long <- pivot_longer(ctr_forecast, !region:authority)
-val_forecast_long <- pivot_longer (val_forecast_reg, !region:authority)
-tstb_forecast_long <- pivot_longer(tstb_forecast_reg, !region:authority)
-bandd_forecast_long <- pivot_longer(ordered_bandd_forecast, !region:authority)
-
-ctr_dwel_plot <- ggplot(ctr_perdwel_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-ctr_fore_plot <- ggplot(ctr_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-val_forecast_plot <- ggplot(val_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-tstb_forecast_plot <- ggplot(tstb_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-bandd_forecast_plot <- ggplot(bandd_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-
-ggplotly(
-ggplot(t, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2) )
-
-rel_m8_innit <- 
-ctr_per_dwel %>% ungroup() %>% mutate(across(contains("year"), ~. - year_1)  )
-rel_m8_long <-  pivot_longer(rel_m8_innit, contains("year"))  %>% mutate(name = as.numeric(str_replace(name, "year_", "")))
-
-
-ggplotly(ggplot(rel_m8_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2))
-ggplot(rel_m8_long, aes(name, value, group = ecode, color = class)) + geom_line(size=1.2) 
 
 nottingham <- val_forecast_reg |>
   dplyr::filter(onscode == 'E06000018') |>
@@ -89,3 +69,21 @@ plot %>%
     geom_line() +
     geom_point() +
     ggtitle("insert titleeeeee") 
+
+
+
+
+
+#################################################################################################
+############### PREVIOUS TESTS#######################
+ctr_perdwel_long <- pivot_longer(ctr_per_dwel, !ecode:class)
+ctr_forecast_long <- pivot_longer(ctr_forecast, !region:authority)
+val_forecast_long <- pivot_longer (val_forecast_reg, !region:authority)
+tstb_forecast_long <- pivot_longer(tstb_forecast_reg, !region:authority)
+bandd_forecast_long <- pivot_longer(ordered_bandd_forecast, !region:authority)
+
+ctr_dwel_plot <- ggplot(ctr_perdwel_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
+ctr_fore_plot <- ggplot(ctr_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
+val_forecast_plot <- ggplot(val_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
+tstb_forecast_plot <- ggplot(tstb_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
+bandd_forecast_plot <- ggplot(bandd_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)

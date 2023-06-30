@@ -2,8 +2,6 @@
 #02/06/23
 
 #graphing package and stats package (zoo)
-install.packages('forecast', dependencies = TRUE)
-install.packages("zoo")
 
 library(tidyverse)
 library("readODS")

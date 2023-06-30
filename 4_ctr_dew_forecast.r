@@ -33,57 +33,65 @@ view(rel_m8_long)
 yr_30_plot <- ggplot(input_ct_dew_long, aes(name, value, group = ecode, color = class)) + geom_line(size=1.2) 
 ggsave(yr_30_plot, 'output\\avearea_30yr_plot.png')
 
+#######################################################################################################################################
+######################### analyse the input data ######################################################
+#######################################################################################################################################
 
-nottingham <- val_forecast_reg |>
-  dplyr::filter(onscode == 'E06000018') |>
-  pivot_longer(!region:authority) |>
-  select(name:value)
+analyse_30yr <- input_ct_dew |>
+  arrange(year_29)
 
-nottingham <- cbind(nottingham, c(1:29))
-nottingham <- nottingham |>
-  dplyr::rename(year = 'c(1:29)')
-
-nottingham_plot <- ggplot(nottingham, aes(x = year, y = value, group = 1)) + geom_line()
-
-
-
-
-west_devon <- ctr_forecast |>
-  dplyr::filter(onscode == 'E07000047') |>
-  pivot_longer(!region:authority) |>
-  select(name:value)
-
-west_devon <- cbind(west_devon, c(1:29))
-west_devon <- west_devon |>
-  dplyr::rename(year = 'c(1:29)')
-
-plot_west_devon <- ggplot(west_devon, aes(x = year, y = value, group = 1)) + geom_line()
+#### average of top and bottom ####
+median(select(analyse_30yr, contains('year_')))
+median(as.matrix(select(analyse_30yr, year_1)))
+median(select())
+str(select(analyse_30yr, year_1))
+as.numeric(select(analyse_30yr, year_1))
+as.matrix(select(analyse_30yr, contains('year_')))
+median(as.matrix(select(analyse_30yr, contains('year_'))))
+matrix_30yr <- as.matrix(select(analyse_30yr, contains('year_')))
+median(matrix_30yr)
+view(matrix_30yr)
 
 
+tail_30yr <- apply(matrix_30yr[1:(nrow(matrix_30yr)/2),], 2, median)
+head_30yr <- apply(matrix_30yr[(nrow(matrix_30yr)/2):(nrow(matrix_30yr)),], 2, median)
+yr30_diff <- as.data.frame(head_30yr - tail_30yr)
+future_years <- seq(from = 2024, length.out = 29)
+yr30_diff <- cbind(yr30_diff, future_years)
+yr30_diff <- yr30_diff |>
+  rename(diff = 'head_30yr - tail_30yr', year = 'future_years')
 
-str(ctr_perdwel_long)
+
+diff_yr30_plot <- yr30_diff %>% 
+        ggplot(aes(x = year , y = diff)) +              #input data fro hh percentage and income band
+        geom_bar(stat = "identity", fill = "#d62d60")  +                                        #specify a bar chart
+        #scale_y_continuous(limits = c(0,)) +     
+        theme_minimal() +                    
+        ylab("Average gap bewteen authorities with the larger CTR per dwelling and\
+        authorities with the smaller CTR per dwelling (£)") + 
+        xlab("Year")                                           #add axis lables
+    diff_yr30_plot <- diff_yr30_plot + theme(text = element_text(size = 20))                  #increase text size 
+   
+    ggplot2::ggsave(paste0(file_loc), a)
+    ggplot2::ggsave(paste0(file_loc_x), a)
+
+yr30_diff[,1]
+view(analyse_30yr)
+apply(matrix_30yr[1:nrow(matrix_30yr)/2,], 2, median)
+apply(matrix_30yr[nrow(matrix_30yr)/2:nrow(matrix_30yr),], 2, median)
+
+yr30_diff <- cbind(yr30_diff, ctr_perdwel_long$name)
+
+view(ctr_per_dwel)
+
+ctr_perdwel_long <- pivot_longer(ctr_per_dwel[1,], !ecode:class)
+
+
+view(yr30_diff)
+view(tail_30yr)
+view(head_30yr)
+view(matrix_30yr[1:(nrow(matrix_30yr)/2),])
+view(matrix_30yr[1:148,])
+matrix_30yr[1:,]
 
 view(ctr_perdwel_long)
-plot %>%
-  ggplot( aes(x=date, y=ctr_per_dwell, group=region)) +
-    geom_line() +
-    geom_point() +
-    ggtitle("insert titleeeeee") 
-
-
-
-
-
-#################################################################################################
-############### PREVIOUS TESTS#######################
-ctr_perdwel_long <- pivot_longer(ctr_per_dwel, !ecode:class)
-ctr_forecast_long <- pivot_longer(ctr_forecast, !region:authority)
-val_forecast_long <- pivot_longer (val_forecast_reg, !region:authority)
-tstb_forecast_long <- pivot_longer(tstb_forecast_reg, !region:authority)
-bandd_forecast_long <- pivot_longer(ordered_bandd_forecast, !region:authority)
-
-ctr_dwel_plot <- ggplot(ctr_perdwel_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-ctr_fore_plot <- ggplot(ctr_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-val_forecast_plot <- ggplot(val_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-tstb_forecast_plot <- ggplot(tstb_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)
-bandd_forecast_plot <- ggplot(bandd_forecast_long, aes(name, value, group = ecode, color = region)) + geom_line(size=1.2)

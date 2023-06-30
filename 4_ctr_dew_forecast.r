@@ -31,7 +31,7 @@ view(rel_m8_innit)
 view(rel_m8_long)
 
 yr_30_plot <- ggplot(input_ct_dew_long, aes(name, value, group = ecode, color = class)) + geom_line(size=1.2) 
-ggsave(yr_30_plot, 'output\\yr_30_plot.png')
+ggsave(yr_30_plot, 'output\\avearea_30yr_plot.png')
 
 
 nottingham <- val_forecast_reg |>

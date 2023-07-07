@@ -1,6 +1,10 @@
 #script to read in historic ctr files
 #11/05/2023
 
+#read in libraries 
+library(janitor)
+library(tidyverse)
+
 #set working dir
 setwd("D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax")
 
@@ -24,6 +28,7 @@ ctr_1819_raw <- readxl::read_excel(ctr_1819_loc, sheet = "Data", skip = 3)
 ctr_1718_raw <- readxl::read_excel(ctr_1718_loc, sheet = "Data", skip = 3)
 ctr_1617_raw <- readxl::read_excel(ctr_1617_loc, sheet = "Data", skip = 3)
 ctr_1516_raw <- readxl::read_excel(ctr_1516_loc, sheet = "Data", skip = 3)
+
 
 #function to clean ctrs and select relevent columns (21/22 to 22/23)
 clean_ctr <- function(output, raw_input, tstb_cy) {
@@ -110,6 +115,15 @@ ctr_historic <- ctr_historic |>
             as.numeric) 
 write.csv(ctr_historic, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_historic.csv")
 
+#export the raw files 
+write.csv(ctr_2223_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_2223_raw.csv")
+write.csv(ctr_2122_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_2122_raw.csv")
+write.csv(ctr_2021_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_2021_raw.csv")
+write.csv(ctr_1920_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_1920_raw.csv")
+write.csv(ctr_1819_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_1819_raw.csv")
+write.csv(ctr_1718_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_1718_raw.csv")
+write.csv(ctr_1617_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_1617_raw.csv")
+write.csv(ctr_1516_raw, "D:\\Users\\emily.keenan\\OneDrive - MHCLG\\Documents\\GitHub\\council-tax\\output\\ctr_1516_raw.csv")
 
 
 view(ctr_2223)
